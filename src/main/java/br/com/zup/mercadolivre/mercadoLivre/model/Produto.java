@@ -1,6 +1,7 @@
 package br.com.zup.mercadolivre.mercadoLivre.model;
 
 import br.com.zup.mercadolivre.mercadoLivre.model.response.OpiniaoProdutoResponse;
+import br.com.zup.mercadolivre.mercadoLivre.model.response.PerguntaProdutoResponse;
 import br.com.zup.mercadolivre.mercadoLivre.shared.ClienteLogado;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -46,6 +47,9 @@ public class Produto {
     @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE)
     private List<Opiniao> opinioes = new ArrayList<Opiniao>();
 
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE)
+    private List<Pergunta> perguntas = new ArrayList<Pergunta>();
+
     public List<Opiniao> adicionaOpiniao(@NotNull Opiniao opiniao) {
         opinioes.add(opiniao);
         return opinioes;
@@ -53,6 +57,10 @@ public class Produto {
 
     public List<Opiniao> getOpinioes() {
         return opinioes;
+    }
+
+    public List<Pergunta> getPerguntas() {
+        return perguntas;
     }
 
     public Cliente getCliente() {
@@ -170,5 +178,21 @@ public class Produto {
 
         return response;
 
+    }
+
+    public void adicionarPergunta(Pergunta pergunta) {
+        this.perguntas.add(pergunta);
+    }
+
+    public List<PerguntaProdutoResponse> todasPerguntasResponse() {
+
+        List<PerguntaProdutoResponse> list = new ArrayList<PerguntaProdutoResponse>();
+        this.perguntas.remove(this.perguntas.size() - 1);
+        for (Pergunta pergunta : this.perguntas) {
+            System.out.println(pergunta.getTitulo());
+            list.add(new PerguntaProdutoResponse(pergunta));
+        }
+
+        return list;
     }
 }

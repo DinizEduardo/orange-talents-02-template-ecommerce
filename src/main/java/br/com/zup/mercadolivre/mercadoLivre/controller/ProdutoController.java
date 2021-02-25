@@ -2,11 +2,14 @@ package br.com.zup.mercadolivre.mercadoLivre.controller;
 
 import br.com.zup.mercadolivre.mercadoLivre.model.Cliente;
 import br.com.zup.mercadolivre.mercadoLivre.model.Opiniao;
+import br.com.zup.mercadolivre.mercadoLivre.model.Pergunta;
 import br.com.zup.mercadolivre.mercadoLivre.model.Produto;
 import br.com.zup.mercadolivre.mercadoLivre.model.request.NovasImagensRequest;
 import br.com.zup.mercadolivre.mercadoLivre.model.request.OpiniaoRequest;
+import br.com.zup.mercadolivre.mercadoLivre.model.request.PerguntaRequest;
 import br.com.zup.mercadolivre.mercadoLivre.model.request.ProdutoRequest;
 import br.com.zup.mercadolivre.mercadoLivre.model.response.OpiniaoProdutoResponse;
+import br.com.zup.mercadolivre.mercadoLivre.model.response.PerguntaProdutoResponse;
 import br.com.zup.mercadolivre.mercadoLivre.model.response.ProdutoResponse;
 import br.com.zup.mercadolivre.mercadoLivre.shared.ClienteLogado;
 import br.com.zup.mercadolivre.mercadoLivre.utils.UploaderFake;
@@ -81,9 +84,25 @@ public class ProdutoController {
 
         manager.merge(produto);
 
-//        List<OpiniaoProdutoResponse> opinioesResponse = produto.toOpinioesResponse();
-
         return ResponseEntity.ok(new OpiniaoProdutoResponse(opiniao));
+    }
+
+    @PostMapping("/{id}/perguntas")
+    @Transactional
+    public ResponseEntity<List<PerguntaProdutoResponse>> adicionarPergunta(@PathVariable long id,
+                                                                     @RequestBody @Valid PerguntaRequest form) {
+
+        Produto produto = manager.find(Produto.class, id);
+
+        Pergunta pergunta = form.toModel(produto);
+
+        produto.adicionarPergunta(pergunta);
+
+        manager.merge(produto);
+
+        List<PerguntaProdutoResponse> perguntas = produto.todasPerguntasResponse();
+
+        return ResponseEntity.ok(perguntas);
 
     }
 
