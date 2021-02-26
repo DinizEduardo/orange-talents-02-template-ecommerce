@@ -13,7 +13,10 @@ import br.com.zup.mercadolivre.mercadoLivre.model.response.PerguntaProdutoRespon
 import br.com.zup.mercadolivre.mercadoLivre.model.response.ProdutoResponse;
 import br.com.zup.mercadolivre.mercadoLivre.shared.ClienteLogado;
 import br.com.zup.mercadolivre.mercadoLivre.utils.UploaderFake;
+import io.jsonwebtoken.lang.Assert;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,7 +93,7 @@ public class ProdutoController {
     @PostMapping("/{id}/perguntas")
     @Transactional
     public ResponseEntity<List<PerguntaProdutoResponse>> adicionarPergunta(@PathVariable long id,
-                                                                     @RequestBody @Valid PerguntaRequest form) {
+                                                                     @RequestBody @Valid PerguntaRequest form) throws NotFoundException {
 
         Produto produto = manager.find(Produto.class, id);
 
