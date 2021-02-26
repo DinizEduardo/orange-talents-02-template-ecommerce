@@ -110,4 +110,8 @@ public class Compra {
                 " para " + getComprador().getEmail());
 
     }
+
+    public void setStatus(StatusENUM status) {
+        this.status = status;
+    }
 }
