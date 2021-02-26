@@ -1,11 +1,7 @@
 package br.com.zup.mercadolivre.mercadoLivre.model.response;
 
-import br.com.zup.mercadolivre.mercadoLivre.model.Caracteristica;
-import br.com.zup.mercadolivre.mercadoLivre.model.ImagemProduto;
-import br.com.zup.mercadolivre.mercadoLivre.model.Opiniao;
-import br.com.zup.mercadolivre.mercadoLivre.model.Produto;
+import br.com.zup.mercadolivre.mercadoLivre.model.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +24,9 @@ public class ProdutoResponse {
 
     private Set<ImagemProduto> imagens;
 
-    private List<Opiniao> opinioes;
+    private List<OpiniaoProdutoResponse> opinioes;
+
+    private List<PerguntaProdutoResponse> perguntas;
 
 
     public ProdutoResponse(Produto produto) {
@@ -47,8 +45,28 @@ public class ProdutoResponse {
 
         this.imagens = produto.getImagens();
 
-        this.opinioes = produto.getOpinioes();
+        this.opinioes = opinioesToResponse(produto.getOpinioes());
 
+        this.perguntas = perguntasToResponse(produto.getPerguntas());
+
+    }
+
+    private List<OpiniaoProdutoResponse> opinioesToResponse(List<Opiniao> opinioes) {
+        List<OpiniaoProdutoResponse> list = new ArrayList<OpiniaoProdutoResponse>();
+        for (Opiniao opiniao : opinioes) {
+            list.add(new OpiniaoProdutoResponse(opiniao));
+        }
+
+        return list;
+    }
+
+    private List<PerguntaProdutoResponse> perguntasToResponse(List<Pergunta> perguntas) {
+        List<PerguntaProdutoResponse> list = new ArrayList<PerguntaProdutoResponse>();
+        for (Pergunta pergunta : perguntas) {
+            list.add(new PerguntaProdutoResponse(pergunta));
+        }
+
+        return list;
     }
 
     public ClienteResponse getCliente() {
@@ -71,6 +89,10 @@ public class ProdutoResponse {
         return quantidade;
     }
 
+    public List<PerguntaProdutoResponse> getPerguntas() {
+        return perguntas;
+    }
+
     public List<CaracteristicaResponse> getCaracteristicas() {
         return caracteristicas;
     }
@@ -83,7 +105,7 @@ public class ProdutoResponse {
         return categoria;
     }
 
-    public List<Opiniao> getOpinioes() {
+    public List<OpiniaoProdutoResponse> getOpinioes() {
         return opinioes;
     }
 }
