@@ -1,13 +1,12 @@
-package br.com.zup.mercadolivre.mercadoLivre.controller;
+package br.com.zup.mercadolivre.mercadoLivre.controller.produto;
 
 import br.com.zup.mercadolivre.mercadoLivre.model.*;
 import br.com.zup.mercadolivre.mercadoLivre.model.request.CaracteristicaRequest;
-import br.com.zup.mercadolivre.mercadoLivre.model.request.OpiniaoRequest;
 
+import static br.com.zup.mercadolivre.mercadoLivre.utils.CaracteristicasHelper.geraCaracteristicasRequest;
 import static br.com.zup.mercadolivre.mercadoLivre.utils.MockMvcRequest.performPost;
 import static org.junit.jupiter.api.Assertions.*;
 
-import br.com.zup.mercadolivre.mercadoLivre.model.request.PerguntaRequest;
 import br.com.zup.mercadolivre.mercadoLivre.model.request.ProdutoRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +20,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -55,112 +53,6 @@ public class ProdutoControllerTest {
 
         categoriaMae = new Categoria("testeCategoriaMae");
         manager.persist(categoriaMae);
-    }
-
-    private List<Caracteristica> geraCaracteristicas(int n) {
-        List<Caracteristica> caracteristicas = new ArrayList<Caracteristica>();
-        for (int i = 0; i < n; i++)
-            caracteristicas.add(new Caracteristica("Nome" + i, "Valor"));
-
-        return caracteristicas;
-    }
-
-    private List<CaracteristicaRequest> geraCaracteristicasRequest(int n) {
-        List<CaracteristicaRequest> caracteristicas = new ArrayList<CaracteristicaRequest>();
-        for (int i = 0; i < n; i++)
-            caracteristicas.add(new CaracteristicaRequest("Nome" + i, "Valor"));
-
-        return caracteristicas;
-    }
-
-    @Test
-    @WithUserDetails("teste@logado.com")
-    public void deveriaCadastrarUmaPerguntaSobreUmProduto() throws Exception {
-        List<Caracteristica> caracteristicas = geraCaracteristicas(3);
-
-        Produto produto = new Produto("Mouse", 10.5, 5, caracteristicas,
-                "Um produto top", categoriaMae);
-
-        manager.persist(produto);
-
-        PerguntaRequest request = new PerguntaRequest("O produto é fragil?");
-
-        performPost(mockMvc, "/produtos/"+ produto.getId() +"/perguntas", 200, objectMapper, request);
-
-        List<Pergunta> perguntas = manager.createQuery("SELECT p FROM Pergunta p", Pergunta.class).getResultList();
-
-        assertTrue(perguntas.size() == 1);
-
-        Pergunta pergunta = perguntas.get(0);
-
-        assertAll(
-                () -> assertEquals(request.getTitulo(), pergunta.getTitulo())
-        );
-    }
-
-    @Test
-    @WithUserDetails("teste@logado.com")
-    public void naoDeveriaCadastrarPerguntaEmProdutoQueNaoExiste() throws Exception {
-        List<Caracteristica> caracteristicas = geraCaracteristicas(3);
-
-        Produto produto = new Produto("Mouse", 10.5, 5, caracteristicas,
-                "Um produto top", categoriaMae);
-
-        manager.persist(produto);
-
-        PerguntaRequest request = new PerguntaRequest("O produto é fragil?");
-
-        performPost(mockMvc, "/produtos/"+ produto.getId()+1 +"/perguntas", 404, objectMapper, request);
-
-        List<Pergunta> perguntas = manager.createQuery("SELECT p FROM Pergunta p", Pergunta.class).getResultList();
-
-        assertTrue(perguntas.size() == 0);
-    }
-
-    @Test
-    @WithUserDetails("teste@logado.com")
-    public void naoDeveriaCadastrarPerguntaSemTitulo() throws Exception{
-        List<Caracteristica> caracteristicas = geraCaracteristicas(3);
-
-        Produto produto = new Produto("Mouse", 10.5, 5, caracteristicas,
-                "Um produto top", categoriaMae);
-
-        manager.persist(produto);
-
-        PerguntaRequest request = new PerguntaRequest("");
-
-        performPost(mockMvc, "/produtos/"+ produto.getId() +"/perguntas", 400, objectMapper, request);
-
-        List<Pergunta> perguntas = manager.createQuery("SELECT p FROM Pergunta p", Pergunta.class).getResultList();
-
-        assertTrue(perguntas.size() == 0);
-    }
-
-    @Test
-    @WithUserDetails("teste@logado.com")
-    public void deveriaCadastrarUmaOpiniaoSobreUmProduto() throws Exception {
-        List<Caracteristica> caracteristicas = geraCaracteristicas(3);
-
-        Produto produto = new Produto("Mouse", 10.5, 5, caracteristicas,
-                "Um produto top", categoriaMae);
-
-        manager.persist(produto);
-
-        OpiniaoRequest request = new OpiniaoRequest(5, "Titulo opiniao", "Descricao opiniao");
-
-        MvcResult result = performPost(mockMvc, "/produtos/"+produto.getId()+"/opinioes", 200, objectMapper, request);
-
-        List<Opiniao> opinioes = manager.createQuery("SELECT o FROM Opiniao o", Opiniao.class).getResultList();
-
-        assertTrue(opinioes.size() == 1);
-
-        Opiniao opiniao = opinioes.get(0);
-
-        assertAll(
-                () -> assertEquals(request.getDescricao(), opiniao.getDescricao()),
-                () -> assertEquals(request.getTitulo(), opiniao.getTitulo()),
-                () -> assertEquals(request.getNota(), opiniao.getNota())
-        );
     }
 
     @Test

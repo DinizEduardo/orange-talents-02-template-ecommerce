@@ -20,6 +20,7 @@ public class Cliente {
 
     @NotBlank
     @NotNull
+    @Column(unique = true)
     private String email;
 
     @NotBlank

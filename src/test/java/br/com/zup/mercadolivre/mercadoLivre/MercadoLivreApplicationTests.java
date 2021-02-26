@@ -10,9 +10,5 @@ import org.springframework.util.Assert;
 @ActiveProfiles("test")
 public class MercadoLivreApplicationTests {
 
-    @Test
-    public void contextLoads() {
-        Assert.isTrue(true);
-    }
 
 }
